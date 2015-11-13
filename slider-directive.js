@@ -1016,7 +1016,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 						{
 							(function(index)			//wrap in anonymous function to get a local copy of the counter
 							{
-								var handle_ele = $('#' + scope.slider_id + 'Handle' + index);
+								var handle_ele = angular.element(document.getElementById(scope.slider_id + 'Handle' + index));
 								// var handle_ele = document.getElementById(scope.slider_id + 'Handle' + index);
 								// handle_ele.ontouchstart = null;		//Remove any previous events before adding a new one
 								handle_ele.unbind('touchstart');    //Remove any previous events before adding a new one
@@ -1041,7 +1041,7 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 							})(ii);
 						}
 						
-						var slider_ele = $('#' + scope.slider_id);
+						var slider_ele = angular.element(document.getElementById(scope.slider_id));
 						// var slider_ele = document.getElementById(scope.slider_id);
 						slider_ele.unbind('touchmove');					//Remove any previous events before adding a new one
 						// slider_ele.ontouchmove = null;				//Remove any previous events before adding a new one
@@ -1213,6 +1213,28 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 			};
 			
 
+			var offset_element = function( elem ) {
+				var docElem, win, rect, doc;
+
+				if ( !elem ) {
+					return;
+				}
+
+				rect = elem.getBoundingClientRect();
+
+				// Make sure element is not hidden (display: none) or disconnected
+				if ( rect.width || rect.height || elem.getClientRects().length ) {
+					doc = elem.ownerDocument;
+					win = doc.defaultView;
+					docElem = doc.documentElement;
+
+					return {
+						top: rect.top + win.pageYOffset - docElem.clientTop,
+						left: rect.left + win.pageXOffset - docElem.clientLeft
+					};
+				}
+			}
+
 			//*******************************************************************************************
 			//initSliderOffsets: handles jquery that gets slider's offset and width.
 			//Should be called at the start of every mouse interaction event with the slider
@@ -1226,10 +1248,10 @@ angular.module('jackrabbitsgroup.angular-slider-directive', []).directive('jrgSl
 					// slider_offset.x = rect.left;
 					// slider_offset.y = rect.top;
 					
-					var bar = $('#' + scope.slider_id + "SliderBar");
-					slider_width = bar.outerWidth();
-					slider_offset.x = bar.offset().left;
-					slider_offset.y = bar.offset().top;
+					var bar = document.getElementById(scope.slider_id + "SliderBar");
+					slider_width = bar.offsetWidth;
+					slider_offset.x = offset_element(bar).left;
+					slider_offset.y = offset_element(bar).top;
 					
 					//When in the bottom two quadrants, the y offset needs to be mirrored (it gets reported as being in the top 2)
 					if(scope.rotate < 0)
@@ -1822,7 +1844,7 @@ each with a unique id, without ever refreshing the page.
 			});
 			
 			//Set touch events for phones		
-			$(window).bind('touchend', function(event)
+			angular.element(window).bind('touchend', function(event)
 			{
 				thisObj.clickHandler(thisObj, event);
 			});
